@@ -1,14 +1,13 @@
 #ifndef dUSART_H
 #define dUSART_H
 
-
 /*****************************************/
 /******** VARIABLES DECLARATIONS *********/
 /*****************************************/
 typedef enum {
-    RESET,
-    SET
-}FlagStatus;
+    Reset,
+    Set
+}FlagStatus_t;
 
 
 typedef struct
@@ -42,12 +41,11 @@ typedef struct
 
 } USART_InitTypeDef;
 
+/* Peripheral base + BUS + UART LOCATION */
+#define     USARTx_1               ((USART_TypeDef *) (((u32)0x40000000) + 0x10000) + 0x3800))
+#define     USARTx_2               ((USART_TypeDef *) ((u32)0x40000000) + 0x4400))
+#define     USARTx_3               ((USART_TypeDef *) ((u32)0x40000000) + 0x4800))
 
-
-
-/*****************************************/
-/*************** DEFINES *****************/
-/*****************************************/
 
 #define USART_StopBits_1                     ((u16)0x0000)
 #define USART_StopBits_2                     ((u16)0x2000)
@@ -60,17 +58,12 @@ typedef struct
 #define USART_TxRxMode_Rx                    ((u16)0x0004)
 #define USART_TxRxMode_Tx                    ((u16)0x0008)
 
-#define USART_Mode_Async                    ((u16)0x0008)
-#define USART_Mode_Sync_Pol_0_Ph_0          ((u16)0x0008)
-#define USART_Mode_Sync_Pol_0_Ph_1          ((u16)0x0008)
-#define USART_Mode_Sync_Pol_1_Ph_0          ((u16)0x0008)
-#define USART_Mode_Sync_Pol_1_Ph_1          ((u16)0x0008)
+#define USART_Mode_Async                     ((u16)0x0008)
+#define USART_Mode_Sync_Pol_0_Ph_0           ((u16)0x0008)
+#define USART_Mode_Sync_Pol_0_Ph_1           ((u16)0x0008)
+#define USART_Mode_Sync_Pol_1_Ph_0           ((u16)0x0008)
+#define USART_Mode_Sync_Pol_1_Ph_1           ((u16)0x0008)
 
-
-
-#define USART1        USARTX_1
-#define USART2        USARTX_2
-#define USART3        USARTX_3
 
 
 #define USART_FLAG_CTS                       ((u16)0x0200)
@@ -83,6 +76,7 @@ typedef struct
 #define USART_FLAG_NE                        ((u16)0x0004)
 #define USART_FLAG_FE                        ((u16)0x0002)
 #define USART_FLAG_PE                        ((u16)0x0001)
+
 
 /*****************************************/
 /********* FUNCTION DECLARATIONS *********/

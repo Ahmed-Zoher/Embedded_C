@@ -1,5 +1,5 @@
 #include "STD_TYPES.h"
-#include <dUSART.h>
+#include "dUSART.h"
 
 
 
@@ -7,10 +7,7 @@
 /********** REGISTERS ADDRESSES **********/
 /*****************************************/
 
-/* Peripheral base + BUS + UART LOCATION */
-#define     USARTX_1               ((USART_TypeDef *) (((u32)0x40000000) + 0x10000) + 0x3800))
-#define     USARTX_2               ((USART_TypeDef *) ((u32)0x40000000) + 0x4400))
-#define     USARTX_3               ((USART_TypeDef *) ((u32)0x40000000) + 0x4800))
+
 
 #define     TXEIE_MASK             (((u16)0x0080))
 #define     RXNEIE_MASK            (((u16)0x0020))
@@ -54,9 +51,13 @@ void dUSART_Init(USART_TypeDef* USARTx, USART_InitTypeDef* USART_InitStruct){
     
     
     /* Applying CR3 Configurations */
-    ///////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////
+    
+    /*           Not Used          */
+    
+    /*  Baud rate values in BRR Configurations */
+    //////////////////////////////////////////////
+    //////////////////////////////////////////////
+    //////////////////////////////////////////////
 }
 
 

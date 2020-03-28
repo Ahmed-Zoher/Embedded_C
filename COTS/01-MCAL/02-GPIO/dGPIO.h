@@ -56,18 +56,18 @@
 
 #define OUTPUT_10MHz_PUSH_PULL			((u8)1)
 #define OUTPUT_10MHz_DRAIN				((u8)5)
-#define OUTPUT_10MHz_AF_PUSH_PULL		((u8)9)
-#define OUTPUT_10MHz_AF_OPEN_DRAIN		((u8)13)
+#define AlternateFn_10MHz_PUSH_PULL		((u8)9)
+#define AlternateFn_10MHz_OPEN_DRAIN	((u8)13)
 
 #define OUTPUT_2MHz_PUSH_PULL			((u8)2)
 #define OUTPUT_2MHz_DRAIN				((u8)6)
-#define OUTPUT_2MHz_AF_PUSH_PULL		((u8)10)
-#define OUTPUT_2MHz_AF_OPEN_DRAIN		((u8)14)
+#define AlternateFn_2MHz_PUSH_PULL		((u8)10)
+#define AlternateFn_2MHz_OPEN_DRAIN		((u8)14)
 
 #define OUTPUT_50MHz_PUSH_PULL			((u8)3)
 #define OUTPUT_50MHz_DRAIN				((u8)7)
-#define OUTPUT_50MHz_AF_PUSH_PULL		((u8)11)
-#define OUTPUT_50MHz_AF_OPEN_DRAIN		((u8)15)
+#define AlternateFn_50MHz_PUSH_PULL		((u8)11)
+#define AlternateFn_50MHz_OPEN_DRAIN	((u8)15)
 
 typedef struct{
     u32  CRL ;
