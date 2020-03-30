@@ -1,7 +1,8 @@
 #include "STD_TYPES.h"
-#include "GPIO.h"
-#include "hLcd.h"
-#include "hLcd_Config.h"
+#include <dGPIO.h>
+#include <hLcd.h>
+#include <hLcd_Config.h>
+
 
 
 /*********************************************************/
@@ -52,6 +53,7 @@ GPIO_t LcdDataPins = {.GPIO_u16Pin = (D0 | D1 | D2 | D3 | D4 | D5 | D6 |D7),
 
 
 State CurrentState = idle;
+u8* tempChar;
 u8* UserString;
 u8  UserStringLength;
 u8  UserRow;
@@ -80,8 +82,8 @@ static void Write(u8 Data , u8 IS_CMD_OR_DATA);
 /*********************************************************/
 void hLcd_Init(void){
     /*For 8 Bit Mode*/
-    GPIO_voidSetPinMode(LcdCtrlPins);
-    GPIO_voidSetPinMode(LcdDataPins);
+    GPIO_voidSetPinMode(&LcdCtrlPins);
+    GPIO_voidSetPinMode(&LcdDataPins);
 }
 
 
@@ -91,7 +93,7 @@ Status_t hLcd_WriteCopy(u8 * String, u8 Length){
         CurrentState = WriteReq;
         UserStringLength = Length;
         for (u8 Loop_Counter = 0; Loop_Counter < Length ; Loop_Counter++){
-            UserString[Loop_Counter] = String[Loop_Counter];
+        	UserString[Loop_Counter] = String[Loop_Counter];
         }
     }
     else
@@ -109,6 +111,7 @@ Status_t hLcd_WriteZeroCopy(u8 * String, u8 Length){
     }
     else
         local_State = STATUS_BUSY;
+
     return local_State;
 }
 
@@ -117,8 +120,8 @@ Status_t hLcd_MoveCursor(u8 N_Rows, u8 N_Columns){
     Status_t local_State = STATUS_OK;
     if (CurrentState == idle){
         CurrentState = CursorMoveReq;
-        UserRow = Row;
-        UserColumn = Column;
+        UserRow = N_Rows;
+        UserColumn = N_Columns;
     }
     else
         local_State = STATUS_BUSY;
@@ -172,7 +175,7 @@ Status_t hLcd_setMoveNotification(void(*NotificationFn)(void)){
 
 void hLcd_Task(void){
     if (isInitDone){
-        switch CurrentState {
+        switch (CurrentState) {
             case idle:                                 break;
             case WriteReq:       WriteProcess();       break;
             case ClearReq:       ClearProcess();       break;
@@ -206,8 +209,9 @@ void Write(u8 Data , u8 IS_CMD_OR_DATA){
 
 
 void InitProcess(void){
-    static initState_t currentInitState = 0;
-    switch currentInitState {
+
+    static initState_t currentInitState = initState_S0;
+    switch (currentInitState) {
         case initState_S0:
             if(isEnabled == 1){
                 GPIO_voidSetPinValue(LcdCtrlPins.GPIO_ptrPort,E,OFF);
@@ -257,7 +261,7 @@ void InitProcess(void){
 
 
 void WriteProcess(void){
-    static CurrentCharacter = 0;
+    static u8 CurrentCharacter = 0;
     if(isEnabled == 1){
         GPIO_voidSetPinValue(LcdCtrlPins.GPIO_ptrPort,E,OFF);
         isEnabled = 0;
@@ -268,7 +272,10 @@ void WriteProcess(void){
             CurrentState = idle;
             WriteDone();
         }else{
+        	//trace_printf("%x\t%c\n",UserString[CurrentCharacter],UserString[CurrentCharacter]);
             Write(UserString[CurrentCharacter],IS_DATA);
+            //Write(tempChar[CurrentCharacter],IS_DATA);
+
             CurrentCharacter++;
             GPIO_voidSetPinValue(LcdCtrlPins.GPIO_ptrPort,E,ON);
             isEnabled = 1;
@@ -302,9 +309,9 @@ void MoveProcess(void){
     }
     else{
         if (UserRow == N_Rows_1)
-            Write(LCD_LINE_1_CMND + UserColumn, IS_COMMAND);
+            Write(LCD_LINE_1_CMD + UserColumn, IS_COMMAND);
         else if (UserRow == N_Rows_2)
-            Write(LCD_LINE_2_CMND + UserColumn, IS_COMMAND);
+            Write(LCD_LINE_2_CMD + UserColumn, IS_COMMAND);
         GPIO_voidSetPinValue(LcdCtrlPins.GPIO_ptrPort,E,ON);
         isEnabled = 1;
     }

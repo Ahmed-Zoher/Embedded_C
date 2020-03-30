@@ -9,8 +9,8 @@
 #define N_Rows_2             2
 #define ONE_LINE             0
 #define TWO_LINE             1
-#define 5x7_FONT             0
-#define 5x10_FONT            1
+#define FONT_5x7             0
+#define FONT_5x10            1
 #define DISPLAY_ON           1
 #define DISPLAY_OFF          0
 #define CURSOR_ON            1

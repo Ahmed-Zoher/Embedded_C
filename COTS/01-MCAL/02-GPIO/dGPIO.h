@@ -49,6 +49,8 @@
 #define GPIO_PIN14  ((u8)0xE)
 #define GPIO_PIN15  ((u8)0xF)
 
+#define PULL_UP          1
+#define PULL_DOWN        0
 
 #define INPUT_ANALOG				    ((u8)0)
 #define INPUT_FLOATING				    ((u8)4)
@@ -57,7 +59,7 @@
 #define OUTPUT_10MHz_PUSH_PULL			((u8)1)
 #define OUTPUT_10MHz_DRAIN				((u8)5)
 #define AlternateFn_10MHz_PUSH_PULL		((u8)9)
-#define AlternateFn_10MHz_OPEN_DRAIN	((u8)13)
+#define AlternateFn_10MHz_OPEN_DRAIN		((u8)13)
 
 #define OUTPUT_2MHz_PUSH_PULL			((u8)2)
 #define OUTPUT_2MHz_DRAIN				((u8)6)
@@ -67,7 +69,7 @@
 #define OUTPUT_50MHz_PUSH_PULL			((u8)3)
 #define OUTPUT_50MHz_DRAIN				((u8)7)
 #define AlternateFn_50MHz_PUSH_PULL		((u8)11)
-#define AlternateFn_50MHz_OPEN_DRAIN	((u8)15)
+#define AlternateFn_50MHz_OPEN_DRAIN		((u8)15)
 
 typedef struct{
     u32  CRL ;
@@ -80,13 +82,13 @@ typedef struct{
 }PORT_REG;
 
 #define  PORTA_BASE_ADDRESS   0x40010800
-#define PORTA_t  ((volatile PORT_REG * const)PORTA_BASE_ADDRESS)
+#define PORTA_t  ((PORT_REG * const)PORTA_BASE_ADDRESS)
 
 #define  PORTB_BASE_ADDRESS   0x40010C00
-#define PORTB_t  ((volatile PORT_REG * const)PORTB_BASE_ADDRESS)
+#define PORTB_t  ((PORT_REG * const)PORTB_BASE_ADDRESS)
 
 #define  PORTC_BASE_ADDRESS   0x40011000
-#define PORTC_t  ((volatile PORT_REG * const)PORTC_BASE_ADDRESS)
+#define PORTC_t  ((PORT_REG * const)PORTC_BASE_ADDRESS)
 
 typedef struct{
     u16 GPIO_u16Pin               ;

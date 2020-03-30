@@ -9,10 +9,10 @@
 #define NUMBER_OF_LINES     TWO_LINE
 
 /*
-    FONT: 5x7_FONT
-          5x10_FONT
+    FONT: FONT_5x7
+          FONT_5x10/
 */
-#define FONT                5x7_FONT
+#define FONT                FONT_5x7
 
 /*
     DISPLAY: DISPLAY_ON
@@ -24,7 +24,7 @@
     CURSOR: CURSOR_ON
             CURSOR_OFF
 */
-#define CURSOR               CURSOR_OFF
+#define CURSOR               CURSOR_ON
 
 /*
     BLINK: BLINK_ON
@@ -36,7 +36,7 @@
     INC_DEC: INCREASE
              DECREASE
 */
-#define INC_DEC              DECREASE
+#define INC_DEC              INCREASE
 
 /*
     SHIFT: SHIFT_ON

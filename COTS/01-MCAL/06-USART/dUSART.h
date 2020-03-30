@@ -26,7 +26,7 @@ typedef struct
   u16  RESERVED5;
   volatile u16 GTPR;
   u16  RESERVED6;
-} USART_TypeDef;
+} USART_typeDef;
 
 typedef struct
 {
@@ -42,9 +42,9 @@ typedef struct
 } USART_InitTypeDef;
 
 /* Peripheral base + BUS + UART LOCATION */
-#define     USARTx_1               ((USART_TypeDef *) (((u32)0x40000000) + 0x10000) + 0x3800))
-#define     USARTx_2               ((USART_TypeDef *) ((u32)0x40000000) + 0x4400))
-#define     USARTx_3               ((USART_TypeDef *) ((u32)0x40000000) + 0x4800))
+#define     USARTx_1               ((USART_typeDef *) ((((u32)0x40000000) + 0x10000) + 0x3800))
+#define     USARTx_2               ((USART_typeDef *) (((u32)0x40000000) + 0x4400))
+#define     USARTx_3               ((USART_typeDef *) (((u32)0x40000000) + 0x4800))
 
 
 #define USART_StopBits_1                     ((u16)0x0000)
@@ -58,12 +58,11 @@ typedef struct
 #define USART_TxRxMode_Rx                    ((u16)0x0004)
 #define USART_TxRxMode_Tx                    ((u16)0x0008)
 
-#define USART_Mode_Async                     ((u16)0x0008)
-#define USART_Mode_Sync_Pol_0_Ph_0           ((u16)0x0008)
-#define USART_Mode_Sync_Pol_0_Ph_1           ((u16)0x0008)
-#define USART_Mode_Sync_Pol_1_Ph_0           ((u16)0x0008)
-#define USART_Mode_Sync_Pol_1_Ph_1           ((u16)0x0008)
-
+#define USART_Mode_Async                     ((u16)0x0000)
+#define USART_Mode_Sync_Pol_0_Ph_0           ((u16)0x0800)
+#define USART_Mode_Sync_Pol_0_Ph_1           ((u16)0x0A00)
+#define USART_Mode_Sync_Pol_1_Ph_0           ((u16)0x0C00)
+#define USART_Mode_Sync_Pol_1_Ph_1           ((u16)0x0E00)
 
 
 #define USART_FLAG_CTS                       ((u16)0x0200)
@@ -82,12 +81,12 @@ typedef struct
 /********* FUNCTION DECLARATIONS *********/
 /*****************************************/
 
-void dUSART_Init(USART_TypeDef* USARTx, USART_InitTypeDef * USART_InitStruct);
+void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef * USART_InitStruct, u8 Sys_Freq);
 void dUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct);
-void dUSART_SendByte(USART_TypeDef* USARTx,u8 Data);
-u8 dUSART_ReceiveByte(USART_TypeDef* USARTx);
-FlagStatus dUSART_GetFlagStatus(USART_TypeDef* USARTx, u16 USART_FLAG);
-
+void dUSART_SendByte(USART_typeDef* USARTx,u8 Data);
+u8 dUSART_ReceiveByte(USART_typeDef* USARTx);
+FlagStatus_t dUSART_GetFlagStatus(USART_typeDef* USARTx, u16 USART_FLAG);
+void dUSART_ClearTCFlag(USART_typeDef* USARTx);
 
 #endif
 

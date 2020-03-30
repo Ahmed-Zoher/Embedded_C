@@ -4,8 +4,7 @@
 
 
 
-#define PULL_UP          1
-#define PULL_DOWN        0
+
 
 #define Switch_1         0
 #define Switch_2         1

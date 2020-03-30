@@ -20,10 +20,10 @@
 
 #define HSION_MASK          (0x1)
 #define HSIRDY_MASK         (0x2)
-#define HSEON_MASK          (0x1000)
-#define HSERDY_MASK         (0x2000)
-#define PLLON_MASK          (0x1000)
-#define PLLRDY_MASK         (0x2000)
+#define HSEON_MASK          (0x10000)
+#define HSERDY_MASK         (0x20000)
+#define PLLON_MASK          (0x1000000)
+#define PLLRDY_MASK         (0x2000000)
 #define SWS_MASK            (0xC)
 #define SWS_OFFSET          (2)
 
@@ -168,7 +168,7 @@
 #define HSITRIM_TRIM_31_VALUE      0x000000F8
 
 
-
+u8 Rcc_GetBusPrescaler(u8 Bus);
 u8 RCC_GetSystemClockFreq(void);
 
 
@@ -177,13 +177,13 @@ u8 RCC_GetSystemClockFreq(void);
 /*                              PLLON_MASK}                 */
 /*        => State { ON, OFF}                               */
 /* Output => {OK, NOK}                                      */
-u8 RCC_SetClockState(u8 Clock, u8 State);
+u8 RCC_SetClockState(u32 Clock, u8 State);
 
 
 /* Description: This API shall Read the Clock State         */
 /* Input  => Clock {HSI, HSE, PLL}                          */
 /* Output => Clock State {1 for ON, 0 for OFF}              */
-u8 RCC_GetClockState(u8 Clock);
+u8 RCC_GetClockState(u32 Clock);
 
 
 /* Description: This API shall Set the System Clock         */
@@ -208,7 +208,7 @@ u8 RCC_ConfigureMCO(u8 Clock);
 /* Input  => Pll_Src {PLLSRC_HSI/2_MASK, PLLSRC_HSE_MASK}   */
 /*        => Pll_Mul {PLLMUL_2, PLLMUL_3, ... , PLLMUL_16}  */
 /* Output => {OK, NOK}                                      */
-u8 RCC_ConfigurePLL(u8 Pll_Src, u8 Pll_Mul);
+u8 RCC_ConfigurePLL(u32 Pll_Src, u32 Pll_Mul);
 
 
 /* Description: This API shall Output the Clock on MCO Pin  */

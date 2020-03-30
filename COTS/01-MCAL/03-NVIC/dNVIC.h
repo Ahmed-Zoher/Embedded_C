@@ -443,7 +443,7 @@ extern void NVIC_ClearPriorityFilter(void);
 
 extern void NVIC_GenerateSoftwareIRQ(u8 InterruptID);
 
-extern void NVIC_SetPriority(u8 Copy_InterruptID,u8 Copy_Preemption,u8 Copy_SubGroup);
+extern void NVIC_SetPriority(u8 InterruptID, u8 Priority);
 extern void NVIC_GetPriority(u8 Copy_InterruptID, u8 * Copy_pPriority);
 
 #endif

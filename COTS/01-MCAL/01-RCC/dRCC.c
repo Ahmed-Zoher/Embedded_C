@@ -7,6 +7,8 @@
 #include <dRCC.h>
 
 
+
+
 #define  SW_CLEAR_MASK       (0xfffffffc)
 #define  PLLMUL_CLEAR_MASK   (0xFFFF7FFF)
 #define  RCC_BASE_ADDRESS    (const)0x40021000
@@ -47,7 +49,7 @@ static u8 RCC_GetPLL_PreScaler(void);
 /*                              PLLON_MASK}                 */
 /*        => State { ON, OFF}                               */
 /* Output => void                                           */
-u8 RCC_SetClockState(u8 Clock, u8 State){
+u8 RCC_SetClockState(u32 Clock, u8 State){
     u8 status           = NOK;
     switch (State){
         case ON:
@@ -67,7 +69,7 @@ u8 RCC_SetClockState(u8 Clock, u8 State){
 /* Input  => Clock {HSIRDY_MASK, HSERDY_MASK,               */
 /*                              PLLRDY_MASK}                */
 /* Output => Clock State {1 for ON, 0 for OFF}              */
-u8 RCC_GetClockState(u8 Clock){
+u8 RCC_GetClockState(u32 Clock){
 
 /*    
     if(RCC->RCC_CR & Clock){
@@ -99,7 +101,8 @@ u8 RCC_SetSystemClock(u8 Clock){
 /* Input  => void                                           */
 /* Output => System Clock {HSE 01, HSI 00, PLL  10}         */
 u8 RCC_GetSystemClock(void){
-    return ((RCC->RCC_CFGR & SWS_MASK) >> SWS_OFFSET);
+	u8 SW = (RCC->RCC_CFGR & 0x3);
+    return SW;
 }
 
 
@@ -109,13 +112,11 @@ u8 RCC_GetSystemClock(void){
 u8 RCC_GetSystemClockFreq(void){
     u8 freq;
     u8 Clock = RCC_GetSystemClock();
-    
     switch(Clock){
         case HSE:freq=8;break;
         case HSI:freq=8;break;
         case PLL:freq=RCC_GetPLL_Freq();break;
     }
-
     u8 sysclock_prescaler = RCC_GetAHB_PreScaler();
     return (freq/sysclock_prescaler); 
 }
@@ -141,9 +142,9 @@ static u8 RCC_GetAHB_PreScaler(void){
 
 static u8 RCC_GetPLL_Freq(void){
     u8 pll_value;
-    u8 pll_src = RCC->RCC_CFGR & ~PLLSRC_CLEAR_MASK;
+    u32 pll_src = RCC->RCC_CFGR & ~PLLSRC_CLEAR_MASK;
     if (pll_src == PLLSRC_HSE_MASK){
-            u8 PLLXTPRE = RCC->RCC_CFGR & ~PLLXTPRE_MASK;
+            u32 PLLXTPRE = RCC->RCC_CFGR & ~PLLXTPRE_MASK;
         if(PLLXTPRE == PLLXTPRE_MASK){
             pll_value=4; // HSE /2
         }else{
@@ -162,11 +163,31 @@ static u8 RCC_GetPLL_PreScaler(void){
     if (prescaler>14){
         prescaler = 16;
     }else{
-        prescaler = +2;
+        prescaler += 2;
     }
     return prescaler;
 }
 
+u8 Rcc_GetBusPrescaler(u8 Bus){
+	u8 local;
+	switch(Bus){
+	case 1:
+		local = (RCC->RCC_CFGR & ((u32)0x700))>> 8;
+		break;
+	case 2:
+		local = (RCC->RCC_CFGR & ((u32)0x3800))>> 11;
+		break;
+	}
+	/* get prescaler of bus */
+	switch (local){
+		case 4: return 2   ;break;
+		case 5:  return 4  ;break;
+		case 6: return 8   ;break;
+		case 7:  return 16  ;break;
+		default: return 1   ;break;
+
+	}
+}
 
 /* Description: This API shall Output the Clock on MCO Pin  */
 /* Input  => Clock {MCO_HSI, MCO_HSE, MCO_PLL, MCO_SYSCLK}  */
@@ -182,14 +203,14 @@ u8 RCC_ConfigureMCO(u8 Clock){
 /* Input  => Pll_Src {PLLSRC_HSI_DIV2_MASK, PLLSRC_HSE_MASK}*/
 /*        => Pll_Mul {PLLMUL_2, PLLMUL_3, ... , PLLMUL_16}  */
 /* Output => {OK, NOK}                                      */
-u8 RCC_ConfigurePLL(u8 Pll_Src, u8 Pll_Mul){
+u8 RCC_ConfigurePLL(u32 Pll_Src, u32 Pll_Mul){
     u32 local      = 0;
     local          = RCC->RCC_CFGR;
     local         &= PLLMUL_CLEAR_MASK;
     local         |= Pll_Mul;
+    local &= PLLSRC_CLEAR_MASK;
+    local |= Pll_Src;
     RCC->RCC_CFGR  = local;
-    RCC->RCC_CFGR &= (~(PLLSRC_CLEAR_MASK));
-    RCC->RCC_CFGR |= Pll_Src;
     return OK;
 }
 

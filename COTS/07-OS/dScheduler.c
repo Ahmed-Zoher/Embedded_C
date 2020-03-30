@@ -1,9 +1,9 @@
 #include "STD_TYPES.h"
-#include <dScheduler.h>
-#include <dScheduler_Config .h>
+#include <lString.h>
 #include <dSTK.h>
 #include <hSTK.h>
-#include <lString.h>
+#include <dScheduler.h>
+#include <dScheduler_Config .h>
 
 
 u8 OS_Flag = 0;

@@ -3,9 +3,9 @@
 /*Version	: 	V01				            */
 /*Date		:	14 Jan 2020		            */
 /********************************************/
-
 #include "STD_TYPES.h"
-#include "dNVIC.h"
+#include <dNVIC.h>
+
 
 #define NVIC_REGS_WIDTH    32 
 
