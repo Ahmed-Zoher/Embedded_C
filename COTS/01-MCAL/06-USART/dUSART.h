@@ -1,45 +1,22 @@
+/************************************************************/
+/*                                                          */
+/*        Author	:	AHMED ZOHER	& WALEED ADEL           */
+/*        Version	: 	V01				                    */
+/*        Date		:	14 Mar 2020		                    */
+/*                                                          */
+/************************************************************/
+
+
+/************************************************************/
+/*********************** HEADER GUARD ***********************/
+/************************************************************/
 #ifndef dUSART_H
 #define dUSART_H
 
-/*****************************************/
-/******** VARIABLES DECLARATIONS *********/
-/*****************************************/
-typedef enum {
-    Reset,
-    Set
-}FlagStatus_t;
+/************************************************************/
+/************************** MACROS **************************/
+/************************************************************/
 
-
-typedef struct
-{
-  volatile u16 SR;
-  u16  RESERVED0;
-  volatile u16 DR;
-  u16  RESERVED1;
-  volatile u16 BRR;
-  u16  RESERVED2;
-  volatile u16 CR1;
-  u16  RESERVED3;
-  volatile u16 CR2;
-  u16  RESERVED4;
-  volatile u16 CR3;
-  u16  RESERVED5;
-  volatile u16 GTPR;
-  u16  RESERVED6;
-} USART_typeDef;
-
-typedef struct
-{
-  u32 USART_BaudRate;            /*!< This member configures the USART communication baud rate.
-                                      The baud rate is computed using the following formula:
-                                       - IntegerDivider = ((PCLKx) / (16 * (USART_InitStruct->USART_BaudRate)))
-                                       - FractionalDivider = ((IntegerDivider - ((u32) IntegerDivider)) * 16) + 0.5 */
-  u16 USART_StopBits;
-  u16 USART_Parity;
-  u16 USART_TxRxMode;
-  u16 USART_Mode;
-
-} USART_InitTypeDef;
 
 /* Peripheral base + BUS + UART LOCATION */
 #define     USARTx_1               ((USART_typeDef *) ((((u32)0x40000000) + 0x10000) + 0x3800))
@@ -76,16 +53,96 @@ typedef struct
 #define USART_FLAG_FE                        ((u16)0x0002)
 #define USART_FLAG_PE                        ((u16)0x0001)
 
+/************************************************************/
+/******************** TYPES DEFINITIONS *********************/
+/************************************************************/
+typedef enum
+{
+    Reset,
+    Set
+	
+}FlagStatus_t;
 
-/*****************************************/
-/********* FUNCTION DECLARATIONS *********/
-/*****************************************/
+/* UART Peripheral register structure */
+typedef struct
+{
+  volatile u16 SR;
+  u16  RESERVED0;
+  volatile u16 DR;
+  u16  RESERVED1;
+  volatile u16 BRR;
+  u16  RESERVED2;
+  volatile u16 CR1;
+  u16  RESERVED3;
+  volatile u16 CR2;
+  u16  RESERVED4;
+  volatile u16 CR3;
+  u16  RESERVED5;
+  volatile u16 GTPR;
+  u16  RESERVED6;
+  
+} USART_typeDef;
 
-void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef * USART_InitStruct, u8 Sys_Freq);
+
+/* configuration parameters for the UART peripheral */
+typedef struct
+{
+  u32 USART_BaudRate;
+  u16 USART_StopBits;
+  u16 USART_Parity;
+  /* Trasmiter/Receiver Enabled or not */
+  u16 USART_TxRxMode;
+  /* Synchronization, clock polarity and clock phase */
+  u16 USART_Mode;
+  
+} USART_InitTypeDef;
+
+/************************************************************/
+/****************** VARIABLES DECLARATIONS ******************/
+/************************************************************/
+
+
+
+
+/************************************************************/
+/****************** FUNCTION DECLARATIONS *******************/
+/************************************************************/
+
+
+/* Description: This API shall Initialize UART Peripheral   */
+/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/*        => USART_InitTypeDef * {parameters for configs}   */
+/*        => Bus_Clock_MHz: Input freq to the peripheral    */
+/* Output => void                                           */
+void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef * USART_InitStruct, u8 Bus_Clock_MHz);
+
+/* Description: This API shall initialize the paramters     */
+/*              of the USART_InitStruct needed by the       */
+/*              init function                               */
+/* Input  => USART_InitTypeDef * {parameters for configs}   */
+/* Output => void                                           */
 void dUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct);
+
+/* Description: This API shall send one byte of data        */
+/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/*        => Data   {Byte of data to be sent}               */
+/* Output => void                                           */
 void dUSART_SendByte(USART_typeDef* USARTx,u8 Data);
+
+/* Description: This API shall send one byte of data        */
+/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/* Output => void                                           */
 u8 dUSART_ReceiveByte(USART_typeDef* USARTx);
+
+/* Description: This API shall return the status of flags   */
+/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/*        => USART_FLAG   {The flag name: USART_FLAG_x}     */
+/* Output => void                                           */
 FlagStatus_t dUSART_GetFlagStatus(USART_typeDef* USARTx, u16 USART_FLAG);
+
+/* Description: This API shall clear the TC flag            */
+/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/* Output => void                                           */
 void dUSART_ClearTCFlag(USART_typeDef* USARTx);
 
 #endif
