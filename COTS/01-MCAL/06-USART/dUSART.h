@@ -114,36 +114,36 @@ typedef struct
 /*        => USART_InitTypeDef * {parameters for configs}   */
 /*        => Bus_Clock_MHz: Input freq to the peripheral    */
 /* Output => void                                           */
-void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef * USART_InitStruct, u8 Bus_Clock_MHz);
+extern void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef * USART_InitStruct, u8 Bus_Clock_MHz);
 
 /* Description: This API shall initialize the paramters     */
 /*              of the USART_InitStruct needed by the       */
 /*              init function                               */
 /* Input  => USART_InitTypeDef * {parameters for configs}   */
 /* Output => void                                           */
-void dUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct);
+extern void dUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct);
 
 /* Description: This API shall send one byte of data        */
 /* Input  => USART_typeDef* {USART1, USART2, .....}         */
 /*        => Data   {Byte of data to be sent}               */
 /* Output => void                                           */
-void dUSART_SendByte(USART_typeDef* USARTx,u8 Data);
+extern void dUSART_SendByte(USART_typeDef* USARTx,u8 Data);
 
 /* Description: This API shall send one byte of data        */
 /* Input  => USART_typeDef* {USART1, USART2, .....}         */
 /* Output => void                                           */
-u8 dUSART_ReceiveByte(USART_typeDef* USARTx);
+extern u8 dUSART_ReceiveByte(USART_typeDef* USARTx);
 
 /* Description: This API shall return the status of flags   */
 /* Input  => USART_typeDef* {USART1, USART2, .....}         */
 /*        => USART_FLAG   {The flag name: USART_FLAG_x}     */
 /* Output => void                                           */
-FlagStatus_t dUSART_GetFlagStatus(USART_typeDef* USARTx, u16 USART_FLAG);
+extern FlagStatus_t dUSART_GetFlagStatus(USART_typeDef* USARTx, u16 USART_FLAG);
 
 /* Description: This API shall clear the TC flag            */
 /* Input  => USART_typeDef* {USART1, USART2, .....}         */
 /* Output => void                                           */
-void dUSART_ClearTCFlag(USART_typeDef* USARTx);
+extern void dUSART_ClearTCFlag(USART_typeDef* USARTx);
 
 #endif
 
