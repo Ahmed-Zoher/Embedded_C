@@ -130,54 +130,67 @@ USART_t USARTs[] ={{.USARTx_x = USARTx_1,
 
 
 /* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/* Input  => u8 {USART1, USART2, .....}         */
 /*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
 /* Output => void                                           */
 void hUSART_Init(u8 USARTx, USART_InitTypeDef* USART_InitStruct){
-
+    
+	/* enabling the USART peripheral using RCC */
     RCC_SetPrephiralClockState(USARTs[USARTx].Bus,USARTs[USARTx].Prephiral_Enable,ON);
-
+	
+	/* getting the Bus clock needed for the Baudrate Calculations */
     u8 Sys_Freq = RCC_GetSystemClockFreq();
     u8 Bus_prescaler = Rcc_GetBusPrescaler(USARTs[USARTx].Bus);
     u8 Bus_Freq_MHz = Sys_Freq/Bus_prescaler;
+	
+	/* Seting the Tx and Rx pins mode using GPIO */
     GPIO_voidSetPinMode(USARTs[USARTx].GPIO_Tx_map);
     GPIO_voidSetPinMode(USARTs[USARTx].GPIO_Rx_map);
+	/* configuring the Rx pin to be pull up      */
     GPIO_voidSetPinValue(USARTs[USARTx].GPIO_Rx_map->GPIO_ptrPort,USARTs[USARTx].GPIO_Rx_map->GPIO_u16Pin,PULL_UP);
-
+	
+	/* calling the USART driver init */
     dUSART_Init(USARTs[USARTx].USARTx_x,USART_InitStruct,Bus_Freq_MHz);
 
+	/* Clear pending flag and enabling the USART interrupt using NVIC */
     NVIC_ClearPendingIRQ(USARTs[USARTx].InterruptID);
     NVIC_EnableIRQ(USARTs[USARTx].InterruptID);
 }
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
+/* Description: This API shall initialize the paramters     */
+/*              of the USART_InitStruct needed by the       */
+/*              init function using default values          */
+/*              this Api is used only upon initializing     */
+/*              with default configurations                 */
+/*              O.W. the user shall initialize the struct   */
+/*              with the required configurations            */
+/* Input  => USART_InitTypeDef * {parameters for configs}   */
 /* Output => void                                           */
 void hUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct){
+	/* calling the driver default init function */
     dUSART_StructDefaultInit(USART_InitStruct);
 }
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/* Description: This API shall Configure UART during runtime*/
+/* Input  => u8 {USART1, USART2, .....}                     */
 /*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
 /* Output => void                                           */
 void hUSART_Configure(u8 USARTx, USART_InitTypeDef * USART_InitStruct){
-	u8 Sys_Freq = RCC_GetSystemClockFreq();
-    dUSART_Init(USARTs[USARTx].USARTx_x,USART_InitStruct,Sys_Freq);
+	/* getting the Bus clock needed for the Baudrate Calculations */
+    u8 Sys_Freq = RCC_GetSystemClockFreq();
+    u8 Bus_prescaler = Rcc_GetBusPrescaler(USARTs[USARTx].Bus);
+    u8 Bus_Freq_MHz = Sys_Freq/Bus_prescaler;
+	/* calling the driver init function to update the configurations */
+    dUSART_Init(USARTs[USARTx].USARTx_x,USART_InitStruct,Bus_Freq_MHz);
 }
 
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
+/* Description: This API shall Set Tx callback Function     */
+/* Input  => u8 {USART1, USART2, .....}                     */
+/*        => CallBackFn {TxCallBack}                        */
 /* Output => void                                           */
 void hUART_SetTxCallBackFn(u8 USARTx,CallBackFn TxCallBack){
     if (TxCallBack != NULL)
@@ -185,10 +198,9 @@ void hUART_SetTxCallBackFn(u8 USARTx,CallBackFn TxCallBack){
 }
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
+/* Description: This API shall Set Rx callback Function     */
+/* Input  => u8 {USART1, USART2, .....}                     */
+/*        => CallBackFn {RxCallBack}                        */
 /* Output => void                                           */
 void hUART_SetRxCallBackFn(u8 USARTx,CallBackFn RxCallBack){
     if (RxCallBack != NULL)
@@ -196,18 +208,22 @@ void hUART_SetRxCallBackFn(u8 USARTx,CallBackFn RxCallBack){
 }
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
-/* Output => void                                           */
+/* Description: This API shall Send an array of Bytes       */
+/* Input  => u8 {USART1, USART2, .....}                     */
+/*        => u8 * Data {pointer to data to be transmitted}  */
+/*        => u32 DataLength: number of bytes                */
+/* Output => u8 {BUFFER_BUSY , BUFFER_IDLE}                 */
 u8 hUSART_Send(u8 USARTx ,u8 * Data ,u32 DataLength ){
     u8 Local_Status = BUFFER_IDLE;
+	/* Checking the buffer state to proceed with the Tx request */
     if (USARTs[USARTx].Tx_Buffer.state == BUFFER_IDLE){
+		/* initializing the Tx buffer with the data to be transmitted */
         USARTs[USARTx].Tx_Buffer.ptrData  = Data;
         USARTs[USARTx].Tx_Buffer.DataSize = DataLength;
+		/* sending the first byte of data */
         dUSART_SendByte(USARTs[USARTx].USARTx_x,USARTs[USARTx].Tx_Buffer.ptrData[USARTs[USARTx].Tx_Buffer.position]);
         USARTs[USARTx].Tx_Buffer.position++;
+		/* changing the state of the buffer to be busy untill transmitting the required data in the Tx Buffer */
         USARTs[USARTx].Tx_Buffer.state = BUFFER_BUSY;
     }else{
         Local_Status = BUFFER_BUSY;
@@ -217,16 +233,19 @@ u8 hUSART_Send(u8 USARTx ,u8 * Data ,u32 DataLength ){
 
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
-/* Output => void                                           */
+/* Description: This API shall Recieve an array of Bytes    */
+/* Input  => u8 {USART1, USART2, .....}                     */
+/*        => u8 * Data {pointer to data to be Recieved}     */
+/*        => u32 DataLength: number of bytes                */
+/* Output => u8 {BUFFER_BUSY , BUFFER_IDLE}                 */
 u8 hUSART_Receive(u8 USARTx ,u8 * Data ,u32 DataLength ){
     u8 Local_Status = BUFFER_IDLE;
+	/* Checking the buffer state to proceed with the Tx request */
     if (USARTs[USARTx].Rx_Buffer.state == BUFFER_IDLE){
+		/* initializing the Tx buffer with the data to be transmitted */
         USARTs[USARTx].Rx_Buffer.ptrData  = Data;
         USARTs[USARTx].Rx_Buffer.DataSize = DataLength;
+		/* changing the state of the buffer to be busy untill transmitting the required data in the Tx Buffer */
         USARTs[USARTx].Rx_Buffer.state = BUFFER_BUSY;
     }else{
         Local_Status = BUFFER_BUSY;
@@ -236,117 +255,171 @@ u8 hUSART_Receive(u8 USARTx ,u8 * Data ,u32 DataLength ){
 
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
+/* Description: Interrupt Request Call Back Function USART1 */
+/* Input  => void                                           */
 /* Output => void                                           */
 void USART1_IRQHandler(void){
+	/* TC FLAG: Transmission Complete Flag */
+	
+	/* Clearing the TC flag at the first interrupt */
 	if(USARTs[USART1].Tx_Buffer.position == 0){
         dUSART_ClearTCFlag(USARTs[USART1].USARTx_x);
 	}
 
-
+	/* checking that the interrupt trigger is the TC flag */
     if (dUSART_GetFlagStatus(USARTs[USART1].USARTx_x,USART_FLAG_TC)){
+		/* checking if the data is fully transmitted successfully */
         if (USARTs[USART1].Tx_Buffer.position == USARTs[USART1].Tx_Buffer.DataSize){
+			/* Reseting the Tx Buffer */
             USARTs[USART1].Tx_Buffer.position = 0;
             USARTs[USART1].Tx_Buffer.ptrData  = NULL;
             USARTs[USART1].Tx_Buffer.DataSize = 0;
             USARTs[USART1].Tx_Buffer.state    = BUFFER_IDLE;
+			/* notifying the application upon transmission completion*/
             USARTs[USART1].TxNotify();
+			
+			/*checking if the buffer is still not empty */
         }else if (USARTs[USART1].Tx_Buffer.state == BUFFER_BUSY){
+			/* send the next byte of data */
             dUSART_SendByte(USARTs[USART1].USARTx_x,USARTs[USART1].Tx_Buffer.ptrData[USARTs[USART1].Tx_Buffer.position]);
             USARTs[USART1].Tx_Buffer.position++;
         }
 
     }
+	/* RXNE FLAG: Receive data Register not empty Flag */
 
+	/* checking that the interrupt trigger is the RXNE flag */
     u8 Local_RXNE_Flag = dUSART_GetFlagStatus(USARTs[USART1].USARTx_x,USART_FLAG_RXNE);
     if (Set == Local_RXNE_Flag){
-
+	     /*checking if the buffer is still not empty */
         if (USARTs[USART1].Rx_Buffer.state == BUFFER_BUSY){
+			/* Recieve the next byte of data */
             USARTs[USART1].Rx_Buffer.ptrData[USARTs[USART1].Rx_Buffer.position] = dUSART_ReceiveByte(USARTs[USART1].USARTx_x);
-
             USARTs[USART1].Rx_Buffer.position++;
 
+		  /* checking if the data is fully Recieved successfully */
           if (USARTs[USART1].Rx_Buffer.position == USARTs[USART1].Rx_Buffer.DataSize){
+			/* Reseting the Rx Buffer */
             USARTs[USART1].Rx_Buffer.position = 0;
             USARTs[USART1].Rx_Buffer.ptrData  = NULL;
             USARTs[USART1].Rx_Buffer.DataSize = 0;
             USARTs[USART1].Rx_Buffer.state    = BUFFER_IDLE;
+			/* notifying the application upon Reception completion*/
             USARTs[USART1].RxNotify();
           }
         }
     }
 }
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
+/* Description: Interrupt Request Call Back Function USART2 */
+/* Input  => void                                           */
 /* Output => void                                           */
 void USART2_IRQHandler(void){
+	/* TC FLAG: Transmission Complete Flag */
+	
+	/* Clearing the TC flag at the first interrupt */
+	if(USARTs[USART2].Tx_Buffer.position == 0){
+        dUSART_ClearTCFlag(USARTs[USART2].USARTx_x);
+	}
+
+	/* checking that the interrupt trigger is the TC flag */
     if (dUSART_GetFlagStatus(USARTs[USART2].USARTx_x,USART_FLAG_TC)){
-        if (USARTs[USART2].Tx_Buffer.state == BUFFER_BUSY){
-            dUSART_SendByte(USARTs[USART2].USARTx_x,USARTs[USART2].Tx_Buffer.ptrData[USARTs[USART2].Tx_Buffer.position]);
-            USARTs[USART2].Tx_Buffer.position++;
-        }
+		/* checking if the data is fully transmitted successfully */
         if (USARTs[USART2].Tx_Buffer.position == USARTs[USART2].Tx_Buffer.DataSize){
+			/* Reseting the Tx Buffer */
             USARTs[USART2].Tx_Buffer.position = 0;
             USARTs[USART2].Tx_Buffer.ptrData  = NULL;
             USARTs[USART2].Tx_Buffer.DataSize = 0;
             USARTs[USART2].Tx_Buffer.state    = BUFFER_IDLE;
-            dUSART_ClearTCFlag(USARTs[USART2].USARTx_x);
+			/* notifying the application upon transmission completion*/
             USARTs[USART2].TxNotify();
+			
+			/*checking if the buffer is still not empty */
+        }else if (USARTs[USART2].Tx_Buffer.state == BUFFER_BUSY){
+			/* send the next byte of data */
+            dUSART_SendByte(USARTs[USART2].USARTx_x,USARTs[USART2].Tx_Buffer.ptrData[USARTs[USART2].Tx_Buffer.position]);
+            USARTs[USART2].Tx_Buffer.position++;
         }
+
     }
-    if (dUSART_GetFlagStatus(USARTs[USART2].USARTx_x,USART_FLAG_RXNE)){
+	/* RXNE FLAG: Receive data Register not empty Flag */
+
+	/* checking that the interrupt trigger is the RXNE flag */
+    u8 Local_RXNE_Flag = dUSART_GetFlagStatus(USARTs[USART2].USARTx_x,USART_FLAG_RXNE);
+    if (Set == Local_RXNE_Flag){
+	     /*checking if the buffer is still not empty */
         if (USARTs[USART2].Rx_Buffer.state == BUFFER_BUSY){
-            USARTs[USART2].Rx_Buffer.ptrData[USARTs[USART2].Tx_Buffer.position] = dUSART_ReceiveByte(USARTs[USART2].USARTx_x);
+			/* Recieve the next byte of data */
+            USARTs[USART2].Rx_Buffer.ptrData[USARTs[USART2].Rx_Buffer.position] = dUSART_ReceiveByte(USARTs[USART2].USARTx_x);
             USARTs[USART2].Rx_Buffer.position++;
-        }
-        if (USARTs[USART2].Rx_Buffer.position == USARTs[USART2].Rx_Buffer.DataSize){
+
+		  /* checking if the data is fully Recieved successfully */
+          if (USARTs[USART2].Rx_Buffer.position == USARTs[USART2].Rx_Buffer.DataSize){
+			/* Reseting the Rx Buffer */
             USARTs[USART2].Rx_Buffer.position = 0;
             USARTs[USART2].Rx_Buffer.ptrData  = NULL;
             USARTs[USART2].Rx_Buffer.DataSize = 0;
             USARTs[USART2].Rx_Buffer.state    = BUFFER_IDLE;
+			/* notifying the application upon Reception completion*/
             USARTs[USART2].RxNotify();
+          }
         }
     }
 }
 
 
-/* Description: This API shall Initialize UART Peripheral   */
-/* Input  => USART_typeDef* {USART1, USART2, .....}         */
-/*        => USART_InitTypeDef * {parameters for configs}   */
-/*        => Sys_Freq: Input frequency to the peripheral    */
+/* Description: Interrupt Request Call Back Function USART3 */
+/* Input  => void                                           */
 /* Output => void                                           */
 void USART3_IRQHandler(void){
+	/* TC FLAG: Transmission Complete Flag */
+	
+	/* Clearing the TC flag at the first interrupt */
+	if(USARTs[USART3].Tx_Buffer.position == 0){
+        dUSART_ClearTCFlag(USARTs[USART3].USARTx_x);
+	}
+
+	/* checking that the interrupt trigger is the TC flag */
     if (dUSART_GetFlagStatus(USARTs[USART3].USARTx_x,USART_FLAG_TC)){
-        if (USARTs[USART3].Tx_Buffer.state == BUFFER_BUSY){
-            dUSART_SendByte(USARTs[USART3].USARTx_x,USARTs[USART3].Tx_Buffer.ptrData[USARTs[USART3].Tx_Buffer.position]);
-            USARTs[USART3].Tx_Buffer.position++;
-        }
+		/* checking if the data is fully transmitted successfully */
         if (USARTs[USART3].Tx_Buffer.position == USARTs[USART3].Tx_Buffer.DataSize){
+			/* Reseting the Tx Buffer */
             USARTs[USART3].Tx_Buffer.position = 0;
             USARTs[USART3].Tx_Buffer.ptrData  = NULL;
             USARTs[USART3].Tx_Buffer.DataSize = 0;
             USARTs[USART3].Tx_Buffer.state    = BUFFER_IDLE;
-            dUSART_ClearTCFlag(USARTs[USART3].USARTx_x);
+			/* notifying the application upon transmission completion*/
             USARTs[USART3].TxNotify();
+			
+			/*checking if the buffer is still not empty */
+        }else if (USARTs[USART3].Tx_Buffer.state == BUFFER_BUSY){
+			/* send the next byte of data */
+            dUSART_SendByte(USARTs[USART3].USARTx_x,USARTs[USART3].Tx_Buffer.ptrData[USARTs[USART3].Tx_Buffer.position]);
+            USARTs[USART3].Tx_Buffer.position++;
         }
+
     }
-    if (dUSART_GetFlagStatus(USARTs[USART3].USARTx_x,USART_FLAG_RXNE)){
+	/* RXNE FLAG: Receive data Register not empty Flag */
+
+	/* checking that the interrupt trigger is the RXNE flag */
+    u8 Local_RXNE_Flag = dUSART_GetFlagStatus(USARTs[USART3].USARTx_x,USART_FLAG_RXNE);
+    if (Set == Local_RXNE_Flag){
+	     /*checking if the buffer is still not empty */
         if (USARTs[USART3].Rx_Buffer.state == BUFFER_BUSY){
-            USARTs[USART3].Rx_Buffer.ptrData[USARTs[USART3].Tx_Buffer.position] = dUSART_ReceiveByte(USARTs[USART3].USARTx_x);
+			/* Recieve the next byte of data */
+            USARTs[USART3].Rx_Buffer.ptrData[USARTs[USART3].Rx_Buffer.position] = dUSART_ReceiveByte(USARTs[USART3].USARTx_x);
             USARTs[USART3].Rx_Buffer.position++;
-        }
-        if (USARTs[USART3].Rx_Buffer.position == USARTs[USART3].Rx_Buffer.DataSize){
+
+		  /* checking if the data is fully Recieved successfully */
+          if (USARTs[USART3].Rx_Buffer.position == USARTs[USART3].Rx_Buffer.DataSize){
+			/* Reseting the Rx Buffer */
             USARTs[USART3].Rx_Buffer.position = 0;
             USARTs[USART3].Rx_Buffer.ptrData  = NULL;
             USARTs[USART3].Rx_Buffer.DataSize = 0;
             USARTs[USART3].Rx_Buffer.state    = BUFFER_IDLE;
+			/* notifying the application upon Reception completion*/
             USARTs[USART3].RxNotify();
+          }
         }
     }
 }
