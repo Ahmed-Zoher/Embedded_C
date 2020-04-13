@@ -53,7 +53,7 @@ typedef struct
 }DMA_Type;
 
 /************************************************************/
-/****************** VARIABLES DECLARATIONS ******************/
+/************************* VARIABLES ************************/
 /************************************************************/
 
 static const u8 DMA_InterruptIDs[7] = {InterruptID_11,
@@ -63,6 +63,9 @@ static const u8 DMA_InterruptIDs[7] = {InterruptID_11,
                                        InterruptID_15,
                                        InterruptID_16,
                                        InterruptID_17 };
+									   
+
+static DMA_CallBackFn DMA_CallBacks[7] = {};
 
 /************************************************************/
 /****************** FUNCTION DECLARATIONS *******************/
@@ -150,32 +153,72 @@ void dDMA_Configure(u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct){
 	
 }
 
+/* DMA set interrput call back */
+DMA_SetCallBackFn(u8 DMA_Channel , DMA_CallBackFn DMA_CallBack){
+	DMA_CallBacks[DMA_Channel] = DMA_CallBack;
+}
+
 
 /* DMA channel1 interrupt handler */
 DMA1_Channel1_IRQHandler(){
+	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch1_InterruptFlag_ClearMask; 
+	/* calling the call back function */
+	if (DMA_CallBacks[0] != NULL){
+		DMA_CallBacks[0]();
+	}
 }
 /* DMA channel2 interrupt handler */
 DMA1_Channel2_IRQHandler(){
+	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch2_InterruptFlag_ClearMask; 
+	/* calling the call back function */
+	if (DMA_CallBacks[1] != NULL){
+		DMA_CallBacks[1]();
+	}
 }
 /* DMA channel3 interrupt handler */
 DMA1_Channel3_IRQHandler(){
+	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch3_InterruptFlag_ClearMask; 
+	/* calling the call back function */
+	if (DMA_CallBacks[2] != NULL){
+		DMA_CallBacks[2]();
+	}
 }
 /* DMA channel4 interrupt handler */
 DMA1_Channel4_IRQHandler(){
+	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch4_InterruptFlag_ClearMask; 
+	/* calling the call back function */
+	if (DMA_CallBacks[3] != NULL){
+		DMA_CallBacks[3]();
+	}
 }
 /* DMA channel5 interrupt handler */
 DMA1_Channel5_IRQHandler(){
+	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch5_InterruptFlag_ClearMask; 
+	/* calling the call back function */
+	if (DMA_CallBacks[4] != NULL){
+		DMA_CallBacks[4]();
+	}
 }
 /* DMA channel6 interrupt handler */
 DMA1_Channel6_IRQHandler(){
+	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch6_InterruptFlag_ClearMask; 
+	/* calling the call back function */
+	if (DMA_CallBacks[5] != NULL){
+		DMA_CallBacks[5]();
+	}
 }
 /* DMA channel7 interrupt handler */
 DMA1_Channel7_IRQHandler(){
+	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch7_InterruptFlag_ClearMask; 
+	/* calling the call back function */
+	if (DMA_CallBacks[6] != NULL){
+		DMA_CallBacks[6]();
+	}
 }
