@@ -10,7 +10,9 @@
 /****************** HEADER-FILES INCLUSION ******************/
 /************************************************************/
 #include "STD_TYPES.h"
-#include "dUSART.h"
+#include <dUSART.h>
+
+
 
 
 /************************************************************/
@@ -52,7 +54,7 @@ void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef* USART_InitStruct , u8
 
     /* Applying CR1 Configurations */
     u16 Tmp_CR1 = ((USARTx->CR1 )&(USARTx_CR1_CLEAR_MASK));
-    Tmp_CR1 |   = USART_InitStruct->USART_Parity | USART_InitStruct->USART_TxRxMode | USART_EN_MASK;
+    Tmp_CR1    |= USART_InitStruct->USART_Parity | USART_InitStruct->USART_TxRxMode | USART_EN_MASK;
 	
 	/* checking if the transmitter is enabled */
     if (((USART_InitStruct->USART_TxRxMode) & (USART_TxRxMode_Rx)) > 0){
@@ -79,7 +81,7 @@ void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef* USART_InitStruct , u8
     
 	/* enable DMA transmitter and reciever modes */
     u16 Tmp_CR3  = ((USARTx->CR3 )&(USARTx_CR3_CLEAR_MASK));
-    Tmp_CR3     |= USART_DMA_TxRxMode;
+    Tmp_CR3     |= USART_InitStruct->USART_DMA_TxRxMode;
     USARTx->CR3  = Tmp_CR3;
     
 	/* Applying BRR Configurations */
@@ -121,7 +123,7 @@ void dUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct){
 	/* both transmitter and reciever are enabled by default*/
 	USART_InitStruct->USART_TxRxMode     = USART_TxRxMode_Rx | USART_TxRxMode_Tx;
 	/* both transmitter and reciever are enabled by default*/
-	USART_InitStruct->USART_DMA_TxRxMode = USART_DMA_TxRxMode_Disable;
+	USART_InitStruct->USART_DMA_TxRxMode = USART_DMA_TxRxMode_Rx | USART_DMA_TxRxMode_Tx ;
 	/* Asynchronous mode selectred by default */
 	USART_InitStruct->USART_Mode         = USART_Mode_Async;
 

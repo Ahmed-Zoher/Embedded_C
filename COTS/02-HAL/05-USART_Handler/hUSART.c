@@ -11,12 +11,14 @@
 /************************************************************/
 
 #include "STD_TYPES.h"
-#include "dRCC.h"
-#include "dNVIC.h"
-#include "dGPIO.h"
-#include "dDMA.h"
-#include "hUSART.h"
-#include "hUSART_Config.h"
+#include <dGPIO.h>
+#include <dNVIC.h>
+#include <dRCC.h>
+#include <dDMA.h>
+#include <hUSART.h>
+#include <hUSART_Config.h>
+
+
 
 /************************************************************/
 /************************** MACROS **************************/
@@ -241,8 +243,8 @@ void hUSART_Init(u8 USARTx, USART_InitTypeDef* USART_InitStruct){
     NVIC_ClearPendingIRQ(USARTs[USARTx].InterruptID);
     NVIC_EnableIRQ(USARTs[USARTx].InterruptID);
    #elif  UART_MODE_DMA == UART_MODE_DMA_Enable
-	dDMA_Init(USARTs[USARTx].DMA_Tx_Channel, DMA_Tx_USARTs[USARTx]);
-	dDMA_Init(USARTs[USARTx].DMA_Rx_Channel, DMA_Rx_USARTs[USARTx]);
+	dDMA_Init(USARTs[USARTx].DMA_Tx_Channel, &DMA_Tx_USARTs[USARTx]);
+	dDMA_Init(USARTs[USARTx].DMA_Rx_Channel, &DMA_Rx_USARTs[USARTx]);
    #endif
 }
 
@@ -282,8 +284,8 @@ void hUSART_Configure(u8 USARTx, USART_InitTypeDef * USART_InitStruct){
 /* Output => void                                           */
 void hUSART_ConfigureDMA_TxRx_mode(u8 USARTx, DMA_InitTypeDef_t * DMA_USART_Configure , u8 Select){
 	switch (Select){
-		case Select_Tx:DMA_Tx_USARTs[USARTx] = DMA_USART_Configure;break;
-		case Select_Rx:DMA_Rx_USARTs[USARTx] = DMA_USART_Configure;break;
+		case Select_Tx:DMA_Tx_USARTs[USARTx] = *DMA_USART_Configure;break;
+		case Select_Rx:DMA_Rx_USARTs[USARTx] = *DMA_USART_Configure;break;
 	};
 }
 
@@ -349,12 +351,13 @@ u8 hUSART_Send(u8 USARTx ,u8 * Data ,u32 DataLength ){
   /* UART DMA mode Enabled */
   #elif UART_MODE_DMA == UART_MODE_DMA_Enable
 	
-	DMA_Tx_USARTs[USARTx].DMA_PeripheralBaseAddress = USARTs[USARTx].USARTx_x->DR;
+	DMA_Tx_USARTs[USARTx].DMA_PeripheralBaseAddress = &(USARTs[USARTx].USARTx_x->DR);
 	DMA_Tx_USARTs[USARTx].DMA_MemoryBaseAddress     = Data;
 	DMA_Tx_USARTs[USARTx].DMA_DataCount             = DataLength;
 
-	dDMA_Configure(USARTs[USARTx].DMA_Tx_Channel,DMA_Tx_USARTs[USARTx]);
+	dDMA_Configure(USARTs[USARTx].DMA_Tx_Channel,&DMA_Tx_USARTs[USARTx]);
 	dDMA_Start(USARTs[USARTx].DMA_Tx_Channel);
+	return BUFFER_BUSY;
   #endif
 }
 
@@ -385,12 +388,13 @@ u8 hUSART_Receive(u8 USARTx ,u8 * Data ,u32 DataLength ){
   /* UART DMA mode Enabled */
   #elif UART_MODE_DMA == UART_MODE_DMA_Enable
 	
-	DMA_Rx_USARTs[USARTx].DMA_PeripheralBaseAddress = USARTs[USARTx].USARTx_x->DR;
+	DMA_Rx_USARTs[USARTx].DMA_PeripheralBaseAddress = &(USARTs[USARTx].USARTx_x->DR);
 	DMA_Rx_USARTs[USARTx].DMA_MemoryBaseAddress     = Data;
 	DMA_Rx_USARTs[USARTx].DMA_DataCount             = DataLength;
 
-	dDMA_Configure(USARTs[USARTx].DMA_Rx_Channel,DMA_Rx_USARTs[USARTx]);
+	dDMA_Configure(USARTs[USARTx].DMA_Rx_Channel,&DMA_Rx_USARTs[USARTx]);
 	dDMA_Start(USARTs[USARTx].DMA_Rx_Channel);
+	return BUFFER_BUSY;
   #endif
 }
 

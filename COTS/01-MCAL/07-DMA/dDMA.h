@@ -18,13 +18,13 @@
 /************************************************************/
 
 /* DMA Channel Number */
-DMA_Channel_1                                   ((u8)0x0)
-DMA_Channel_2                                   ((u8)0x1)
-DMA_Channel_3                                   ((u8)0x2)
-DMA_Channel_4                                   ((u8)0x3)
-DMA_Channel_5                                   ((u8)0x4)
-DMA_Channel_6                                   ((u8)0x5)
-DMA_Channel_7                                   ((u8)0x6)
+#define DMA_Channel_1                                   ((u8)0x0)
+#define DMA_Channel_2                                   ((u8)0x1)
+#define DMA_Channel_3                                   ((u8)0x2)
+#define DMA_Channel_4                                   ((u8)0x3)
+#define DMA_Channel_5                                   ((u8)0x4)
+#define DMA_Channel_6                                   ((u8)0x5)
+#define DMA_Channel_7                                   ((u8)0x6)
 
 
 /* DMA_InitTypeDef_t configurations */
@@ -113,7 +113,7 @@ typedef void(*DMA_CallBackFn)(void);
 
 
 extern void dDMA_Init( u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct);
-extern void dDMA_GetCurrentDataCounter(u8 DMA_Channel, u32 * CurrentDataCounter);
+extern void dDMA_GetCurrentDataCounter(u8 DMA_Channel, u16 * CurrentDataCounter);
 extern void dDMA_Start(u8 DMA_Channel);
 extern void dDMA_Configure(u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct);
 extern void dDMA_SetCallBackFn(u8 DMA_Channel , DMA_CallBackFn DMA_CallBack);

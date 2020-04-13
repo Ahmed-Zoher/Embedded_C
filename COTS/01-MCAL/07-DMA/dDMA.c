@@ -10,8 +10,11 @@
 /****************** HEADER-FILES INCLUSION ******************/
 /************************************************************/
 #include "STD_TYPES.h"
-#include "dDMA.h"
-#include "dNVIC.h"
+#include <dNVIC.h>
+#include <dDMA.h>
+
+
+
 
 
 /************************************************************/
@@ -21,9 +24,10 @@
 #define DMA 			                                 ((volatile DMA_Type*)(DMA_BASE_ADDRESS))
 
 #define CCR_CLEAR_MASK                                   ((u32)0x00000000)
-#define DMA_TC_Interrupt_Enable                          ((u32)0x00000002)
+#define DMA_TC_InterruptEnable                           ((u32)0x00000002)
 
 #define DMA_Channelx_Enable                              ((u32)0x00000001)
+#define DMA_Channelx_Disable                             ((u32)0xFFFFFFFE)
 
 #define DMA_ch1_InterruptFlag_ClearMask                  ((u32)0x0000000F)
 #define DMA_ch2_InterruptFlag_ClearMask                  ((u32)0x000000F0)
@@ -90,10 +94,10 @@ void dDMA_Init( u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct){
 	/* enable DMA Interrupts */
 	tempReg    |= (DMA_InitStruct->DMA_HalfTransfer       |
 	               DMA_InitStruct->DMA_ErrorInterrupt     |
-                   DMA_InitStruct->DMA_TC_Interrupt_Enable );
+				   DMA_TC_InterruptEnable                   );
 
     /* copy tempReg Value to the CRR Register */
-	DMA->Channel[DMA_Channel].CRR   = tempReg;
+	DMA->Channel[DMA_Channel].CCR   = tempReg;
 
 	/* setting data counter value */
 	DMA->Channel[DMA_Channel].CNDTR = ((u16)DMA_InitStruct->DMA_DataCount);
@@ -116,8 +120,11 @@ void dDMA_GetCurrentDataCounter(u8 DMA_Channel, u16 * CurrentDataCounter){
 }
 
 void dDMA_Start(u8 DMA_Channel){
+
+	/* clearing the Enable for DMA */
+		DMA->Channel[DMA_Channel].CCR &= DMA_Channelx_Disable;
 	/* sets the enable bit for channelx */
-		DMA->Channel[DMA_Channel].CRR |= DMA_Channelx_Enable;
+		DMA->Channel[DMA_Channel].CCR |= DMA_Channelx_Enable;
 }
 
 void dDMA_Configure(u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct){
@@ -137,10 +144,10 @@ void dDMA_Configure(u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct){
 	/* enable DMA Interrupts */
 	tempReg    |= (DMA_InitStruct->DMA_HalfTransfer       |
 	               DMA_InitStruct->DMA_ErrorInterrupt     |
-                   DMA_InitStruct->DMA_TC_Interrupt_Enable );
+				   DMA_TC_InterruptEnable                  );
 
     /* copy tempReg Value to the CRR Register */
-	DMA->Channel[DMA_Channel].CRR   = tempReg;
+	DMA->Channel[DMA_Channel].CCR   = tempReg;
 
 	/* setting data counter value */
 	DMA->Channel[DMA_Channel].CNDTR = ((u16)DMA_InitStruct->DMA_DataCount);
@@ -161,6 +168,7 @@ void dDMA_SetCallBackFn(u8 DMA_Channel , DMA_CallBackFn DMA_CallBack){
 
 /* DMA channel1 interrupt handler */
 void DMA1_Channel1_IRQHandler(void){
+
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch1_InterruptFlag_ClearMask; 
 	/* calling the call back function */
@@ -170,8 +178,9 @@ void DMA1_Channel1_IRQHandler(void){
 }
 /* DMA channel2 interrupt handler */
 void DMA1_Channel2_IRQHandler(void){
+
 	/* clearing interrupt flag */
-	DMA->IFCR &= DMA_ch2_InterruptFlag_ClearMask; 
+	DMA->IFCR |= DMA_ch2_InterruptFlag_ClearMask;
 	/* calling the call back function */
 	if (DMA_CallBacks[1] != NULL){
 		DMA_CallBacks[1]();
@@ -179,8 +188,9 @@ void DMA1_Channel2_IRQHandler(void){
 }
 /* DMA channel3 interrupt handler */
 void DMA1_Channel3_IRQHandler(void){
+
 	/* clearing interrupt flag */
-	DMA->IFCR &= DMA_ch3_InterruptFlag_ClearMask; 
+	DMA->IFCR |= DMA_ch3_InterruptFlag_ClearMask;
 	/* calling the call back function */
 	if (DMA_CallBacks[2] != NULL){
 		DMA_CallBacks[2]();
@@ -188,8 +198,9 @@ void DMA1_Channel3_IRQHandler(void){
 }
 /* DMA channel4 interrupt handler */
 void DMA1_Channel4_IRQHandler(void){
+
 	/* clearing interrupt flag */
-	DMA->IFCR &= DMA_ch4_InterruptFlag_ClearMask; 
+	DMA->IFCR |= DMA_ch4_InterruptFlag_ClearMask;
 	/* calling the call back function */
 	if (DMA_CallBacks[3] != NULL){
 		DMA_CallBacks[3]();
@@ -197,8 +208,9 @@ void DMA1_Channel4_IRQHandler(void){
 }
 /* DMA channel5 interrupt handler */
 void DMA1_Channel5_IRQHandler(void){
+
 	/* clearing interrupt flag */
-	DMA->IFCR &= DMA_ch5_InterruptFlag_ClearMask; 
+	DMA->IFCR |= DMA_ch5_InterruptFlag_ClearMask;
 	/* calling the call back function */
 	if (DMA_CallBacks[4] != NULL){
 		DMA_CallBacks[4]();
@@ -206,8 +218,9 @@ void DMA1_Channel5_IRQHandler(void){
 }
 /* DMA channel6 interrupt handler */
 void DMA1_Channel6_IRQHandler(void){
+
 	/* clearing interrupt flag */
-	DMA->IFCR &= DMA_ch6_InterruptFlag_ClearMask; 
+	DMA->IFCR |= DMA_ch6_InterruptFlag_ClearMask;
 	/* calling the call back function */
 	if (DMA_CallBacks[5] != NULL){
 		DMA_CallBacks[5]();
@@ -215,8 +228,9 @@ void DMA1_Channel6_IRQHandler(void){
 }
 /* DMA channel7 interrupt handler */
 void DMA1_Channel7_IRQHandler(void){
+
 	/* clearing interrupt flag */
-	DMA->IFCR &= DMA_ch7_InterruptFlag_ClearMask; 
+	DMA->IFCR |= DMA_ch7_InterruptFlag_ClearMask;
 	/* calling the call back function */
 	if (DMA_CallBacks[6] != NULL){
 		DMA_CallBacks[6]();
