@@ -116,7 +116,7 @@ extern void dDMA_Init( u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct);
 extern void dDMA_GetCurrentDataCounter(u8 DMA_Channel, u32 * CurrentDataCounter);
 extern void dDMA_Start(u8 DMA_Channel);
 extern void dDMA_Configure(u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct);
-
+extern void dDMA_SetCallBackFn(u8 DMA_Channel , DMA_CallBackFn DMA_CallBack);
 
 
 #endif

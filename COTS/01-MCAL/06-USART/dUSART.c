@@ -21,6 +21,7 @@
 #define     RXNEIE_MASK             (((u16)0x0020))
 #define     USARTx_CR1_CLEAR_MASK   (((u16)0xD853))
 #define     USARTx_CR2_CLEAR_MASK   (((u16)0xC1FF))
+#define     USARTx_CR3_CLEAR_MASK   (((u16)0xFF3F))
 #define     USART_EN_MASK           (((u16)0x2000))
 #define     SR_TC_FLAG_CLEAR_MASK   (((u16)0xFFBF))
 #define     SR_RXNE_FLAG_CLEAR_MASK (((u16)0xFFDF))
@@ -76,8 +77,13 @@ void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef* USART_InitStruct , u8
     
     /* Applying CR3 Configurations */
     
-    /*           Not Used          */
+	/* enable DMA transmitter and reciever modes */
+    u16 Tmp_CR3  = ((USARTx->CR3 )&(USARTx_CR3_CLEAR_MASK));
+    Tmp_CR3     |= USART_DMA_TxRxMode;
+    USARTx->CR3  = Tmp_CR3;
     
+	/* Applying BRR Configurations */
+	
     /*  Baud rate values in BRR Configurations  */
     f32 baudrate     = (f32) USART_InitStruct->USART_BaudRate;
     f32 Bus_Clock_Hz = (f32) (Bus_Clock_MHz * 1000000);
@@ -109,13 +115,16 @@ void dUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct){
     /* inializing a struct needed by the init function
 	   with default values                             */
 	   
-	USART_InitStruct->USART_BaudRate = 9600;
-	USART_InitStruct->USART_StopBits = USART_StopBits_1;
-	USART_InitStruct->USART_Parity   = USART_Parity_No ;
+	USART_InitStruct->USART_BaudRate     = 9600;
+	USART_InitStruct->USART_StopBits     = USART_StopBits_1;
+	USART_InitStruct->USART_Parity       = USART_Parity_No ;
 	/* both transmitter and reciever are enabled by default*/
-	USART_InitStruct->USART_TxRxMode = USART_TxRxMode_Rx | USART_TxRxMode_Tx;
+	USART_InitStruct->USART_TxRxMode     = USART_TxRxMode_Rx | USART_TxRxMode_Tx;
+	/* both transmitter and reciever are enabled by default*/
+	USART_InitStruct->USART_DMA_TxRxMode = USART_DMA_TxRxMode_Disable;
 	/* Asynchronous mode selectred by default */
-	USART_InitStruct->USART_Mode     = USART_Mode_Async;
+	USART_InitStruct->USART_Mode         = USART_Mode_Async;
+
   
 }
 

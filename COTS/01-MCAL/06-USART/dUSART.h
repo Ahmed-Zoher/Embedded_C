@@ -35,6 +35,10 @@
 #define USART_TxRxMode_Rx                    ((u16)0x0004)
 #define USART_TxRxMode_Tx                    ((u16)0x0008)
 
+#define USART_DMA_TxRxMode_Disable           ((u16)0x0000)
+#define USART_DMA_TxRxMode_Rx                ((u16)0x0040)
+#define USART_DMA_TxRxMode_Tx                ((u16)0x0080)
+
 #define USART_Mode_Async                     ((u16)0x0000)
 #define USART_Mode_Sync_Pol_0_Ph_0           ((u16)0x0800)
 #define USART_Mode_Sync_Pol_0_Ph_1           ((u16)0x0A00)
@@ -92,9 +96,11 @@ typedef struct
   u16 USART_Parity;
   /* Trasmiter/Receiver Enabled or not */
   u16 USART_TxRxMode;
+  /* DMA Trasmiter/Receiver Enabled or not */
+  u16 USART_DMA_TxRxMode;
   /* Synchronization, clock polarity and clock phase */
   u16 USART_Mode;
-  
+
 } USART_InitTypeDef;
 
 /************************************************************/

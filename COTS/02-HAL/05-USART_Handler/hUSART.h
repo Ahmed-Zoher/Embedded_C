@@ -23,10 +23,13 @@
 /************************** MACROS **************************/
 /************************************************************/
 
-#define USART1        0
-#define USART2        1
-#define USART3        2
-
+#define USART1                                    0
+#define USART2                                    1
+#define USART3                                    2
+#define UART_MODE_DMA_Enable                      1
+#define UART_MODE_DMA_Disable                     0
+#define Select_Tx                                 0
+#define Select_Rx                                 1
 /************************************************************/
 /******************** TYPES DEFINITIONS *********************/
 /************************************************************/
@@ -92,6 +95,12 @@ extern void hUART_SetTxCallBackFn(u8 USARTx,CallBackFn TxCallBack);
 /* Output => void                                           */
 extern void hUART_SetRxCallBackFn(u8 USARTx,CallBackFn RxCallBack);
 
+
+/* Description: This API shall Configure DMA during runtime*/
+/* Input  => u8 {USART1, USART2, .....}                     */
+/*        => DMA_InitTypeDef_t * {parameters for configs}   */
+/* Output => void                                           */
+extern void hUSART_ConfigureDMA_mode(u8 USARTx, DMA_InitTypeDef_t * DMA_USART_Configure);
 
 #endif
 

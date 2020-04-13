@@ -154,13 +154,13 @@ void dDMA_Configure(u8 DMA_Channel, DMA_InitTypeDef_t * DMA_InitStruct){
 }
 
 /* DMA set interrput call back */
-DMA_SetCallBackFn(u8 DMA_Channel , DMA_CallBackFn DMA_CallBack){
+void dDMA_SetCallBackFn(u8 DMA_Channel , DMA_CallBackFn DMA_CallBack){
 	DMA_CallBacks[DMA_Channel] = DMA_CallBack;
 }
 
 
 /* DMA channel1 interrupt handler */
-DMA1_Channel1_IRQHandler(){
+void DMA1_Channel1_IRQHandler(void){
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch1_InterruptFlag_ClearMask; 
 	/* calling the call back function */
@@ -169,7 +169,7 @@ DMA1_Channel1_IRQHandler(){
 	}
 }
 /* DMA channel2 interrupt handler */
-DMA1_Channel2_IRQHandler(){
+void DMA1_Channel2_IRQHandler(void){
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch2_InterruptFlag_ClearMask; 
 	/* calling the call back function */
@@ -178,7 +178,7 @@ DMA1_Channel2_IRQHandler(){
 	}
 }
 /* DMA channel3 interrupt handler */
-DMA1_Channel3_IRQHandler(){
+void DMA1_Channel3_IRQHandler(void){
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch3_InterruptFlag_ClearMask; 
 	/* calling the call back function */
@@ -187,7 +187,7 @@ DMA1_Channel3_IRQHandler(){
 	}
 }
 /* DMA channel4 interrupt handler */
-DMA1_Channel4_IRQHandler(){
+void DMA1_Channel4_IRQHandler(void){
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch4_InterruptFlag_ClearMask; 
 	/* calling the call back function */
@@ -196,7 +196,7 @@ DMA1_Channel4_IRQHandler(){
 	}
 }
 /* DMA channel5 interrupt handler */
-DMA1_Channel5_IRQHandler(){
+void DMA1_Channel5_IRQHandler(void){
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch5_InterruptFlag_ClearMask; 
 	/* calling the call back function */
@@ -205,7 +205,7 @@ DMA1_Channel5_IRQHandler(){
 	}
 }
 /* DMA channel6 interrupt handler */
-DMA1_Channel6_IRQHandler(){
+void DMA1_Channel6_IRQHandler(void){
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch6_InterruptFlag_ClearMask; 
 	/* calling the call back function */
@@ -214,7 +214,7 @@ DMA1_Channel6_IRQHandler(){
 	}
 }
 /* DMA channel7 interrupt handler */
-DMA1_Channel7_IRQHandler(){
+void DMA1_Channel7_IRQHandler(void){
 	/* clearing interrupt flag */
 	DMA->IFCR &= DMA_ch7_InterruptFlag_ClearMask; 
 	/* calling the call back function */

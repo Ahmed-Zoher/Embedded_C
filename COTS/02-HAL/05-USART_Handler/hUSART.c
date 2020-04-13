@@ -11,10 +11,12 @@
 /************************************************************/
 
 #include "STD_TYPES.h"
-#include <dRCC.h>
-#include <dNVIC.h>
-#include <dGPIO.h>
-#include <hUSART.h>
+#include "dRCC.h"
+#include "dNVIC.h"
+#include "dGPIO.h"
+#include "dDMA.h"
+#include "hUSART.h"
+#include "hUSART_Config.h"
 
 /************************************************************/
 /************************** MACROS **************************/
@@ -57,7 +59,10 @@ typedef struct {
     u32            Prephiral_Enable;
 	/* The Bus on which the USART is clocked by */
     u8             Bus;
-	
+	/* DMA Tx Channel */
+	u8             DMA_Tx_Channel;
+	/* DMA Rx Channel */
+	u8             DMA_Rx_Channel;
 }USART_t;
 
 /************************************************************/
@@ -93,6 +98,8 @@ GPIO_t GPIO_UART3_Tx={.GPIO_u16Pin    = GPIO_PIN10_MASK,
 GPIO_t GPIO_UART3_Rx={.GPIO_u16Pin    = GPIO_PIN11_MASK,
 		              .GPIO_u8PinMode = INPUT_PULL_UP_DOWN,
 				      .GPIO_ptrPort   = GPIO_PORTB};
+					  
+
 
 /* an array of UART_t struct which holds the UARTx (USART Peripheral number), callback Functions 
    GPIO Pins configiration and the interruptID for each UART                                     */
@@ -103,7 +110,9 @@ USART_t USARTs[] ={{.USARTx_x = USARTx_1,
 					.GPIO_Rx_map=&GPIO_UART1_Rx,
                     .InterruptID = InterruptID_37,
 					.Prephiral_Enable = USART1EN,
-                    .Bus = APB2},
+                    .Bus = APB2,
+					.DMA_Tx_Channel = DMA_Channel_4,
+					.DMA_Rx_Channel = DMA_Channel_5},
 
                    {.USARTx_x = USARTx_2,
                     .TxNotify = NULL ,
@@ -112,7 +121,9 @@ USART_t USARTs[] ={{.USARTx_x = USARTx_1,
 					.GPIO_Rx_map=&GPIO_UART2_Rx,
                     .InterruptID = InterruptID_38,
 					.Prephiral_Enable = USART2EN,
-                    .Bus = APB1},
+                    .Bus = APB1,
+					.DMA_Tx_Channel = DMA_Channel_6,
+					.DMA_Rx_Channel = DMA_Channel_7},
 
 
                    {.USARTx_x = USARTx_3,
@@ -122,10 +133,82 @@ USART_t USARTs[] ={{.USARTx_x = USARTx_1,
 					.GPIO_Rx_map=&GPIO_UART3_Rx,
                     .InterruptID = InterruptID_39,
 					.Prephiral_Enable=USART3EN,
-                    .Bus = APB1}};
+                    .Bus = APB1,
+					.DMA_Tx_Channel = DMA_Channel_2,
+					.DMA_Rx_Channel = DMA_Channel_3}};
+					
+
+/* array of DMA configs for each USART */
+DMA_InitTypeDef_t DMA_Tx_USARTs []={{.DMA_PeripheralDataWidth = DMA_PeripheralDataWidth_8_bit, 
+                                     .DMA_MemoryDataWidth     = DMA_MemoryDataWidth_8_bit,
+                                     .DMA_CircularMode        = DMA_CircularMode_Disable,
+                                     .DMA_ChannelPriority     = DMA_ChannelPriority_Low,
+                                     .DMA_Mem2Mem             = DMA_Mem2Mem_Disable,
+                                     .DMA_HalfTransfer        = DMA_HalfTransfer_Disable,
+                                     .DMA_ErrorInterrupt      = DMA_ErrorInterrupt_Disable,
+									 .DMA_Direction           = DMA_DirectionMemToPer,
+									 .DMA_PeripheralIncrement = DMA_PeripheralIncrement_Disable,
+									 .DMA_MemoryIncrement     = DMA_MemoryIncrement_Enable},
+								     
+								    {.DMA_PeripheralDataWidth = DMA_PeripheralDataWidth_8_bit, 
+                                     .DMA_MemoryDataWidth     = DMA_MemoryDataWidth_8_bit,
+                                     .DMA_CircularMode        = DMA_CircularMode_Disable,
+                                     .DMA_ChannelPriority     = DMA_ChannelPriority_Low,
+                                     .DMA_Mem2Mem             = DMA_Mem2Mem_Disable,
+                                     .DMA_HalfTransfer        = DMA_HalfTransfer_Disable,
+                                     .DMA_ErrorInterrupt      = DMA_ErrorInterrupt_Disable,
+									 .DMA_Direction           = DMA_DirectionMemToPer,
+									 .DMA_PeripheralIncrement = DMA_PeripheralIncrement_Disable,
+									 .DMA_MemoryIncrement     = DMA_MemoryIncrement_Enable},
+								     
+								    {.DMA_PeripheralDataWidth = DMA_PeripheralDataWidth_8_bit, 
+                                     .DMA_MemoryDataWidth     = DMA_MemoryDataWidth_8_bit,
+                                     .DMA_CircularMode        = DMA_CircularMode_Disable,
+                                     .DMA_ChannelPriority     = DMA_ChannelPriority_Low,
+                                     .DMA_Mem2Mem             = DMA_Mem2Mem_Disable,
+                                     .DMA_HalfTransfer        = DMA_HalfTransfer_Disable,
+                                     .DMA_ErrorInterrupt      = DMA_ErrorInterrupt_Disable,
+									 .DMA_Direction           = DMA_DirectionMemToPer,
+									 .DMA_PeripheralIncrement = DMA_PeripheralIncrement_Disable,
+									 .DMA_MemoryIncrement     = DMA_MemoryIncrement_Enable}};
+								  
+/* array of DMA configs for each USART */
+DMA_InitTypeDef_t DMA_Rx_USARTs []={{.DMA_PeripheralDataWidth = DMA_PeripheralDataWidth_8_bit, 
+                                     .DMA_MemoryDataWidth     = DMA_MemoryDataWidth_8_bit,
+                                     .DMA_CircularMode        = DMA_CircularMode_Disable,
+                                     .DMA_ChannelPriority     = DMA_ChannelPriority_Low,
+                                     .DMA_Mem2Mem             = DMA_Mem2Mem_Disable,
+                                     .DMA_HalfTransfer        = DMA_HalfTransfer_Disable,
+                                     .DMA_ErrorInterrupt      = DMA_ErrorInterrupt_Disable,
+									 .DMA_Direction           = DMA_DirectionPerToMem,
+									 .DMA_PeripheralIncrement = DMA_PeripheralIncrement_Disable,
+									 .DMA_MemoryIncrement     = DMA_MemoryIncrement_Enable},
+								     
+								    {.DMA_PeripheralDataWidth = DMA_PeripheralDataWidth_8_bit, 
+                                     .DMA_MemoryDataWidth     = DMA_MemoryDataWidth_8_bit,
+                                     .DMA_CircularMode        = DMA_CircularMode_Disable,
+                                     .DMA_ChannelPriority     = DMA_ChannelPriority_Low,
+                                     .DMA_Mem2Mem             = DMA_Mem2Mem_Disable,
+                                     .DMA_HalfTransfer        = DMA_HalfTransfer_Disable,
+                                     .DMA_ErrorInterrupt      = DMA_ErrorInterrupt_Disable,
+									 .DMA_Direction           = DMA_DirectionPerToMem,
+									 .DMA_PeripheralIncrement = DMA_PeripheralIncrement_Disable,
+									 .DMA_MemoryIncrement     = DMA_MemoryIncrement_Enable},
+								     
+								    {.DMA_PeripheralDataWidth = DMA_PeripheralDataWidth_8_bit, 
+                                     .DMA_MemoryDataWidth     = DMA_MemoryDataWidth_8_bit,
+                                     .DMA_CircularMode        = DMA_CircularMode_Disable,
+                                     .DMA_ChannelPriority     = DMA_ChannelPriority_Low,
+                                     .DMA_Mem2Mem             = DMA_Mem2Mem_Disable,
+                                     .DMA_HalfTransfer        = DMA_HalfTransfer_Disable,
+                                     .DMA_ErrorInterrupt      = DMA_ErrorInterrupt_Disable,
+									 .DMA_Direction           = DMA_DirectionPerToMem,
+									 .DMA_PeripheralIncrement = DMA_PeripheralIncrement_Disable,
+									 .DMA_MemoryIncrement     = DMA_MemoryIncrement_Enable}};
+
 
 /************************************************************/
-/****************** FUNCTION DEFINITIONS *******************/
+/****************** FUNCTION DEFINITIONS ********************/
 /************************************************************/
 
 
@@ -152,9 +235,15 @@ void hUSART_Init(u8 USARTx, USART_InitTypeDef* USART_InitStruct){
 	/* calling the USART driver init */
     dUSART_Init(USARTs[USARTx].USARTx_x,USART_InitStruct,Bus_Freq_MHz);
 
+   /*  enable the interrupt only if the DMA mode is not used */
+   #if  UART_MODE_DMA == UART_MODE_DMA_Disable
 	/* Clear pending flag and enabling the USART interrupt using NVIC */
     NVIC_ClearPendingIRQ(USARTs[USARTx].InterruptID);
     NVIC_EnableIRQ(USARTs[USARTx].InterruptID);
+   #elif  UART_MODE_DMA == UART_MODE_DMA_Enable
+	dDMA_Init(USARTs[USARTx].DMA_Tx_Channel, DMA_Tx_USARTs[USARTx]);
+	dDMA_Init(USARTs[USARTx].DMA_Rx_Channel, DMA_Rx_USARTs[USARTx]);
+   #endif
 }
 
 
@@ -187,14 +276,31 @@ void hUSART_Configure(u8 USARTx, USART_InitTypeDef * USART_InitStruct){
 }
 
 
+/* Description: This API shall Configure DMA during runtime*/
+/* Input  => u8 {USART1, USART2, .....}                     */
+/*        => DMA_InitTypeDef_t * {parameters for configs}   */
+/* Output => void                                           */
+void hUSART_ConfigureDMA_TxRx_mode(u8 USARTx, DMA_InitTypeDef_t * DMA_USART_Configure , u8 Select){
+	switch (Select){
+		case Select_Tx:DMA_Tx_USARTs[USARTx] = DMA_USART_Configure;break;
+		case Select_Rx:DMA_Rx_USARTs[USARTx] = DMA_USART_Configure;break;
+	};
+}
 
 /* Description: This API shall Set Tx callback Function     */
 /* Input  => u8 {USART1, USART2, .....}                     */
 /*        => CallBackFn {TxCallBack}                        */
 /* Output => void                                           */
 void hUART_SetTxCallBackFn(u8 USARTx,CallBackFn TxCallBack){
+  /* UART DMA mode Disabled */
     if (TxCallBack != NULL)
+	  #if  UART_MODE_DMA == UART_MODE_DMA_Disable
         USARTs[USARTx].TxNotify = TxCallBack;
+
+  /* UART DMA mode Enabled */
+	  #elif UART_MODE_DMA == UART_MODE_DMA_Enable
+		dDMA_SetCallBackFn(USARTs[USARTx].DMA_Tx_Channel ,TxCallBack) ;
+      #endif
 }
 
 
@@ -203,8 +309,15 @@ void hUART_SetTxCallBackFn(u8 USARTx,CallBackFn TxCallBack){
 /*        => CallBackFn {RxCallBack}                        */
 /* Output => void                                           */
 void hUART_SetRxCallBackFn(u8 USARTx,CallBackFn RxCallBack){
+  /* UART DMA mode Disabled */
     if (RxCallBack != NULL)
-        USARTs[USARTx].RxNotify = RxCallBack;
+	  #if  UART_MODE_DMA == UART_MODE_DMA_Disable
+		USARTs[USARTx].RxNotify = RxCallBack;
+		
+	/* UART DMA mode Enabled */
+	  #elif UART_MODE_DMA == UART_MODE_DMA_Enable
+		dDMA_SetCallBackFn(USARTs[USARTx].DMA_Rx_Channel ,RxCallBack) ;
+      #endif
 }
 
 
@@ -214,6 +327,9 @@ void hUART_SetRxCallBackFn(u8 USARTx,CallBackFn RxCallBack){
 /*        => u32 DataLength: number of bytes                */
 /* Output => u8 {BUFFER_BUSY , BUFFER_IDLE}                 */
 u8 hUSART_Send(u8 USARTx ,u8 * Data ,u32 DataLength ){
+  /* UART DMA mode Disabled */
+  #if  UART_MODE_DMA == UART_MODE_DMA_Disable
+
     u8 Local_Status = BUFFER_IDLE;
 	/* Checking the buffer state to proceed with the Tx request */
     if (USARTs[USARTx].Tx_Buffer.state == BUFFER_IDLE){
@@ -229,6 +345,17 @@ u8 hUSART_Send(u8 USARTx ,u8 * Data ,u32 DataLength ){
         Local_Status = BUFFER_BUSY;
     }
     return Local_Status;
+	
+  /* UART DMA mode Enabled */
+  #elif UART_MODE_DMA == UART_MODE_DMA_Enable
+	
+	DMA_Tx_USARTs[USARTx].DMA_PeripheralBaseAddress = USARTs[USARTx].USARTx_x->DR;
+	DMA_Tx_USARTs[USARTx].DMA_MemoryBaseAddress     = Data;
+	DMA_Tx_USARTs[USARTx].DMA_DataCount             = DataLength;
+
+	dDMA_Configure(USARTs[USARTx].DMA_Tx_Channel,DMA_Tx_USARTs[USARTx]);
+	dDMA_Start(USARTs[USARTx].DMA_Tx_Channel);
+  #endif
 }
 
 
@@ -239,6 +366,9 @@ u8 hUSART_Send(u8 USARTx ,u8 * Data ,u32 DataLength ){
 /*        => u32 DataLength: number of bytes                */
 /* Output => u8 {BUFFER_BUSY , BUFFER_IDLE}                 */
 u8 hUSART_Receive(u8 USARTx ,u8 * Data ,u32 DataLength ){
+
+  /* UART DMA mode Disabled */
+  #if  UART_MODE_DMA == UART_MODE_DMA_Disable
     u8 Local_Status = BUFFER_IDLE;
 	/* Checking the buffer state to proceed with the Tx request */
     if (USARTs[USARTx].Rx_Buffer.state == BUFFER_IDLE){
@@ -251,9 +381,21 @@ u8 hUSART_Receive(u8 USARTx ,u8 * Data ,u32 DataLength ){
         Local_Status = BUFFER_BUSY;
     }
     return Local_Status;
+	
+  /* UART DMA mode Enabled */
+  #elif UART_MODE_DMA == UART_MODE_DMA_Enable
+	
+	DMA_Rx_USARTs[USARTx].DMA_PeripheralBaseAddress = USARTs[USARTx].USARTx_x->DR;
+	DMA_Rx_USARTs[USARTx].DMA_MemoryBaseAddress     = Data;
+	DMA_Rx_USARTs[USARTx].DMA_DataCount             = DataLength;
+
+	dDMA_Configure(USARTs[USARTx].DMA_Rx_Channel,DMA_Rx_USARTs[USARTx]);
+	dDMA_Start(USARTs[USARTx].DMA_Rx_Channel);
+  #endif
 }
 
-
+/*  enable the interrupt only if the DMA mode is not used */
+#if   UART_MODE_DMA == UART_MODE_DMA_Disable
 
 /* Description: Interrupt Request Call Back Function USART1 */
 /* Input  => void                                           */
@@ -423,3 +565,4 @@ void USART3_IRQHandler(void){
         }
     }
 }
+#endif
