@@ -17,6 +17,7 @@
 /****************** HEADER-FILES INCLUSION ******************/
 /************************************************************/
 
+#include "dDMA.h"
 #include <dUSART.h>
 
 /************************************************************/
@@ -87,20 +88,31 @@ extern u8 hUSART_Receive(u8 USARTx,u8 * Data , u32 DataLength);
 /* Input  => u8 {USART1, USART2, .....}                     */
 /*        => CallBackFn {TxCallBack}                        */
 /* Output => void                                           */
-extern void hUART_SetTxCallBackFn(u8 USARTx,CallBackFn TxCallBack);
+extern void hUSART_SetTxCallBackFn(u8 USARTx,CallBackFn TxCallBack);
 
 /* Description: This API shall Set Rx callback Function     */
 /* Input  => u8 {USART1, USART2, .....}                     */
 /*        => CallBackFn {RxCallBack}                        */
 /* Output => void                                           */
-extern void hUART_SetRxCallBackFn(u8 USARTx,CallBackFn RxCallBack);
+extern void hUSART_SetRxCallBackFn(u8 USARTx,CallBackFn RxCallBack);
 
+/* Description: This API shall Set LIN break detection    
+   callback Function                                        */
+/* Input  => u8 {USART1, USART2, .....}                     */
+/*        => CallBackFn {LINCallBack}                       */
+/* Output => void                                           */
+extern void hUART_SetLIN_BreakCallBackFn(u8 USARTx,CallBackFn LINCallBack);
 
-/* Description: This API shall Configure DMA during runtime*/
+/* Description: This API shall Configure DMA during runtime */
 /* Input  => u8 {USART1, USART2, .....}                     */
 /*        => DMA_InitTypeDef_t * {parameters for configs}   */
 /* Output => void                                           */
 extern void hUSART_ConfigureDMA_mode(u8 USARTx, DMA_InitTypeDef_t * DMA_USART_Configure);
+
+/* Description: This API shall Send LIN break               */
+/* Input  => void                                           */
+/* Output => void                                           */
+extern void hUSART_SendLIN_Break(u8 USARTx);
 
 #endif
 

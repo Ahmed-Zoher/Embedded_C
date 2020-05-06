@@ -3,13 +3,13 @@
 /* Version : 	V01				                        */
 /* Date		 :	March 2020		                    */
 /************************************************/
-
-#include "STD_TYPES.h"
-#include <lString.h>
+#include <STD_TYPES.h>
+#include <Scheduler.h>
+#include <Scheduler_Config .h>
 #include <dSTK.h>
 #include <hSTK.h>
-#include <dScheduler.h>
-#include <dScheduler_Config .h>
+#include <lString.h>
+
 
 
 /*************************************************/
@@ -131,6 +131,6 @@ void Scheduler (void){
             SysTasks[Loop_Counter].TaskInfo -> Task -> Runnable();
             SysTasks[Loop_Counter].TicksToExecute = SysTasks[Loop_Counter].PeriodInTicks;
         }
-        SysTasks[Loop_Counter].TicksToExecute-- ;
+        SysTasks[Loop_Counter].TicksToExecute--;
     }
 }

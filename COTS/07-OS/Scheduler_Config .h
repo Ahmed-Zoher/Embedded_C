@@ -11,7 +11,7 @@
 /****** Definitions & Static Configurations ******/
 /*************************************************/
 
-#define NUM_OF_TASKS     2
-#define TICK_TIME_US     ((u32)5000)
+#define NUM_OF_TASKS     1
+#define TICK_TIME_US     ((u32)1000)
 
 #endif 

@@ -45,6 +45,12 @@
 #define USART_Mode_Sync_Pol_1_Ph_0           ((u16)0x0C00)
 #define USART_Mode_Sync_Pol_1_Ph_1           ((u16)0x0E00)
 
+#define USART_LIN_Mode_Enable_10_Bit         ((u16)0x4000)
+#define USART_LIN_Mode_Enable_11_Bit         ((u16)0x4020)
+#define USART_LIN_Mode_Disable               (0)
+
+#define USART_LIN_Interrupt_Enable           ((u16)0x0040)
+#define USART_LIN_Interrupt_Disable          ((u16)0x0000)
 
 #define USART_FLAG_CTS                       ((u16)0x0200)
 #define USART_FLAG_LBD                       ((u16)0x0100)
@@ -64,7 +70,6 @@ typedef enum
 {
     Reset,
     Set
-	
 }FlagStatus_t;
 
 /* UART Peripheral register structure */
@@ -100,6 +105,10 @@ typedef struct
   u16 USART_DMA_TxRxMode;
   /* Synchronization, clock polarity and clock phase */
   u16 USART_Mode;
+  /* LIN Mode Enabled or not */
+  u16 USART_LIN_Mode;
+  /* LIN Interrupt Enabled or not */
+  u16 USART_LIN_Interrupt;
 
 } USART_InitTypeDef;
 
@@ -129,6 +138,12 @@ extern void dUSART_Init(USART_typeDef* USARTx, USART_InitTypeDef * USART_InitStr
 /* Output => void                                           */
 extern void dUSART_StructDefaultInit(USART_InitTypeDef* USART_InitStruct);
 
+/* Description: This API shall clear the TC flag            */
+/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/* Output => void                                           */
+void dUSART_ClearLBDFlag(USART_typeDef* USARTx);
+
+
 /* Description: This API shall send one byte of data        */
 /* Input  => USART_typeDef* {USART1, USART2, .....}         */
 /*        => Data   {Byte of data to be sent}               */
@@ -150,6 +165,17 @@ extern FlagStatus_t dUSART_GetFlagStatus(USART_typeDef* USARTx, u16 USART_FLAG);
 /* Input  => USART_typeDef* {USART1, USART2, .....}         */
 /* Output => void                                           */
 extern void dUSART_ClearTCFlag(USART_typeDef* USARTx);
+
+/* Description: This API shall clear the RXNE flag            */
+/* Input  => USART_typeDef* {USART1, USART2, .....}         */
+/* Output => void                                           */
+extern void dUSART_ClearRXNEFlag(USART_typeDef* USARTx);
+
+/* Description: This API shall Send LIN break               */
+/* Input  => void                                           */
+/* Output => void                                           */
+extern void dUSART_SendLIN_Break(USART_typeDef* USARTx);
+
 
 #endif
 
