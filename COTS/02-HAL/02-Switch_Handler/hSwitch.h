@@ -8,8 +8,13 @@
 
 #define Switch_1         0
 #define Switch_2         1
+#define Switch_Flash     2
 
+#define DEBOUNCE_DELAY_MS      50
 
+#define SWITCH_OS_MODE_DISABLE 1 
+#define SWITCH_OS_MODE_ENABLE  0
+#define SWITCH_OS_MODE         SWITCH_OS_MODE_DISABLE
 
 typedef struct{
     u8         SwitchName  ;

@@ -4,6 +4,7 @@
 
 
 
+
 typedef struct{
     u8  SwitchName     ;
     u8  PrevState      ;
@@ -25,9 +26,21 @@ void hSwitch_Init(void){
 }
 
 u8 hSwitch_GetSwitchState(u8 L_SwitchName){
-    return SwitchesStates[L_SwitchName].State;
+#if SWITCH_OS_MODE
+	if (map[L_SwitchName].PullState == PULL_UP)
+	{
+		SwitchesStatess[L_SwitchName].State = (GPIO_u8GetPinValue(Switches[L_SwitchName].GPIO_ptrPort,map[L_SwitchName].Pin))^(0x01);
+	}
+	else 
+	{
+		SwitchesStatess[L_SwitchName].State = GPIO_u8GetPinValue(Switches[L_SwitchName].GPIO_ptrPort,map[L_SwitchName].Pin);
+	}
+	}
+#endif
+	return SwitchesStates[L_SwitchName].State;
 }
 
+#if SWITCH_OS_MODE ==  SWITCH_OS_MODE_ENABLE
 void hSwitch_DebounceTask(void){
     for (u8 LoopCounter = 0; LoopCounter < NUM_OF_SWITCHES ;LoopCounter++){
         u8 CurrentState = GPIO_u8GetPinValue(Switches[LoopCounter].GPIO_ptrPort,map[LoopCounter].Pin);
@@ -43,3 +56,4 @@ void hSwitch_DebounceTask(void){
         SwitchesStates[LoopCounter].PrevState = CurrentState;
     }
 }
+#endif
